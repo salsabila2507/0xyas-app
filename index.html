@@ -309,6 +309,9 @@ function formatNum(n) {
   return n.toString();
 }
 
+// API BASE URL - set to your VPS backend
+var API_BASE = 'http://'+window.location.hostname+':3100';
+
 // ANALYZE POST
 function analyzePost() {
   var url = document.getElementById('postUrl').value.trim();
@@ -316,57 +319,59 @@ function analyzePost() {
   var loading = document.getElementById('loading');
   var results = document.getElementById('results');
 
-  if (!url) {
-    alert('Please paste an X post URL');
-    return;
-  }
+  if (!url) { alert('Please paste an X post URL'); return; }
+  if (!validateUrl(url)) { alert('Invalid URL format. Use: x.com/user/status/id'); return; }
 
-  if (!validateUrl(url)) {
-    alert('Invalid URL format. Use: x.com/user/status/id');
-    return;
-  }
-
-  // Show loading
   btn.disabled = true;
   loading.classList.add('active');
   results.classList.remove('active');
 
-  // Simulate analysis delay
-  setTimeout(function() {
-    var username = extractUser(url);
-    var postId = extractPostId(url);
-    var metrics = generateMetrics(url);
-    var auth = calculateAuthenticity(metrics, username);
+  fetch(API_BASE + '/api/analyze', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ url: url })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (!data.ok) throw new Error(data.error || 'Analysis failed');
 
-    renderResults(url, username, postId, metrics, auth);
+    var username = data.post.authorHandle.replace('@', '') || extractUser(url);
+
+    renderResults(url, username, null, data.authenticity, data.post);
 
     loading.classList.remove('active');
     results.classList.add('active');
     btn.disabled = false;
-  }, 1800);
+  })
+  .catch(function(err) {
+    loading.classList.remove('active');
+    btn.disabled = false;
+    alert('Error: ' + err.message);
+  });
 }
 
 // RENDER RESULTS
-function renderResults(url, username, postId, metrics, auth) {
-  // Post preview
+function renderResults(url, username, postId, auth, postData) {
   var badgeClass = auth.trafficLight === 'green' ? 'badge-green' : auth.trafficLight === 'yellow' ? 'badge-yellow' : 'badge-red';
   var badgeText = auth.trafficLight === 'green' ? 'GENUINE' : auth.trafficLight === 'yellow' ? 'SUSPICIOUS' : 'LIKELY BOT';
 
+  // Post preview
   document.getElementById('postPreview').innerHTML =
     '<div class="post-header">' +
       '<div class="post-avatar">' + username.charAt(0).toUpperCase() + '</div>' +
       '<div class="post-user-info">' +
-        '<div class="post-username">' + username + '</div>' +
-        '<div class="post-handle">@' + username + ' · Post #' + postId.slice(-6) + '</div>' +
+        '<div class="post-username">' + (postData.author || username) + '</div>' +
+        '<div class="post-handle">@' + username + (postData.date ? ' · ' + postData.date : '') + '</div>' +
       '</div>' +
       '<div class="post-badge ' + badgeClass + '">' + badgeText + '</div>' +
     '</div>' +
-    '<div class="post-content">Post engagement analysis for @' + username + '/' + postId + ' — ' + formatNum(metrics.views) + ' views detected, ' + metrics.engRate.toFixed(2) + '% engagement rate.</div>' +
+    '<div class="post-content">' + (postData.text || '(no text)') + '</div>' +
     '<div class="post-url">' + url + '</div>';
 
-  // Score section
+  // Score
   var scoreColor = auth.trafficLight === 'green' ? 'var(--cyan)' : auth.trafficLight === 'yellow' ? 'var(--gold)' : 'var(--pink)';
   var activeDot = auth.trafficLight === 'green' ? 'active-green' : auth.trafficLight === 'yellow' ? 'active-yellow' : 'active-red';
+  var sig = auth.signals || {};
 
   document.getElementById('scoreSection').innerHTML =
     '<div class="score-ring">' +
@@ -379,53 +384,40 @@ function renderResults(url, username, postId, metrics, auth) {
       '</div>' +
     '</div>' +
     '<div class="metrics-grid">' +
-      '<div class="metric-card"><div class="metric-value">' + formatNum(metrics.likes) + '</div><div class="metric-label">Likes</div></div>' +
-      '<div class="metric-card"><div class="metric-value">' + formatNum(metrics.retweets) + '</div><div class="metric-label">Retweets</div></div>' +
-      '<div class="metric-card"><div class="metric-value">' + formatNum(metrics.replies) + '</div><div class="metric-label">Replies</div></div>' +
-      '<div class="metric-card"><div class="metric-value">' + formatNum(metrics.bookmarks) + '</div><div class="metric-label">Bookmarks</div></div>' +
-      '<div class="metric-card"><div class="metric-value">' + formatNum(metrics.views) + '</div><div class="metric-label">Views</div></div>' +
-      '<div class="metric-card"><div class="metric-value">' + metrics.engRate.toFixed(2) + '%</div><div class="metric-label">Eng. Rate</div><div class="metric-sub">(likes+rt+replies)/views</div></div>' +
+      '<div class="metric-card"><div class="metric-value">' + (sig.wordCount || 0) + '</div><div class="metric-label">Words</div></div>' +
+      '<div class="metric-card"><div class="metric-value">' + (sig.textLength || 0) + '</div><div class="metric-label">Characters</div></div>' +
+      '<div class="metric-card"><div class="metric-value">' + (sig.hashtagCount || 0) + '</div><div class="metric-label">Hashtags</div></div>' +
+      '<div class="metric-card"><div class="metric-value">' + (sig.emojiCount || 0) + '</div><div class="metric-label">Emojis</div></div>' +
+      '<div class="metric-card"><div class="metric-value">' + (sig.hasLink ? 'YES' : 'NO') + '</div><div class="metric-label">Contains Link</div></div>' +
+      '<div class="metric-card"><div class="metric-value">' + (sig.sentiment || 'neutral').toUpperCase() + '</div><div class="metric-label">Sentiment</div></div>' +
     '</div>';
 
   // Breakdown
-  var likeRtRatio = (metrics.likes / Math.max(metrics.retweets, 1)).toFixed(1);
-  var replyGenuinePct = auth.replyQuality === 'genuine' ? Math.floor(Math.random() * 20) + 75 : Math.floor(Math.random() * 30) + 30;
-  var replyGenericPct = 100 - replyGenuinePct;
+  var sentimentColor = (sig.sentiment === 'very_positive' || sig.sentiment === 'positive') ? 'val-good' :
+                       (sig.sentiment === 'very_negative' || sig.sentiment === 'negative') ? 'val-bad' : 'val-neutral';
 
   document.getElementById('breakdownSection').innerHTML =
-    '<div class="breakdown-title">DETAILED BREAKDOWN</div>' +
+    '<div class="breakdown-title">TEXT ANALYSIS</div>' +
     '<div class="breakdown-grid">' +
       '<div class="breakdown-card">' +
-        '<div class="breakdown-card-title">Engagement Ratio</div>' +
-        '<div class="breakdown-item"><span class="breakdown-key">Like / Retweet</span><span class="breakdown-val val-neutral">' + likeRtRatio + ' : 1</span></div>' +
-        '<div class="breakdown-item"><span class="breakdown-key">Like / Reply</span><span class="breakdown-val val-neutral">' + (metrics.likes / Math.max(metrics.replies, 1)).toFixed(1) + ' : 1</span></div>' +
-        '<div class="breakdown-item"><span class="breakdown-key">Retweet / Reply</span><span class="breakdown-val val-neutral">' + (metrics.retweets / Math.max(metrics.replies, 1)).toFixed(1) + ' : 1</span></div>' +
-        '<div class="breakdown-item"><span class="breakdown-key">Bookmark / Like</span><span class="breakdown-val val-neutral">' + (metrics.bookmarks / Math.max(metrics.likes, 1)).toFixed(2) + '</span></div>' +
+        '<div class="breakdown-card-title">Content Signals</div>' +
+        '<div class="breakdown-item"><span class="breakdown-key">Text Length</span><span class="breakdown-val val-neutral">' + (sig.textLength || 0) + ' chars</span></div>' +
+        '<div class="breakdown-item"><span class="breakdown-key">Word Count</span><span class="breakdown-val val-neutral">' + (sig.wordCount || 0) + ' words</span></div>' +
+        '<div class="breakdown-item"><span class="breakdown-key">Hashtags</span><span class="breakdown-val ' + ((sig.hashtagCount||0) <= 3 ? 'val-good' : 'val-warn') + '">' + (sig.hashtagCount || 0) + '</span></div>' +
+        '<div class="breakdown-item"><span class="breakdown-key">Emojis</span><span class="breakdown-val ' + ((sig.emojiCount||0) <= 5 ? 'val-good' : 'val-warn') + '">' + (sig.emojiCount || 0) + '</span></div>' +
       '</div>' +
       '<div class="breakdown-card">' +
-        '<div class="breakdown-card-title">Reply Quality</div>' +
-        '<div class="breakdown-item"><span class="breakdown-key">Genuine Replies</span><span class="breakdown-val ' + (replyGenuinePct > 60 ? 'val-good' : 'val-warn') + '">' + replyGenuinePct + '%</span></div>' +
-        '<div class="breakdown-item"><span class="breakdown-key">Generic / Bot Replies</span><span class="breakdown-val ' + (replyGenericPct < 30 ? 'val-good' : 'val-bad') + '">' + replyGenericPct + '%</span></div>' +
-        '<div class="breakdown-item"><span class="breakdown-key">Avg Reply Length</span><span class="breakdown-val val-neutral">' + (Math.floor(Math.random() * 40) + 15) + ' chars</span></div>' +
-      '</div>' +
-      '<div class="breakdown-card">' +
-        '<div class="breakdown-card-title">Account Signals</div>' +
-        '<div class="breakdown-item"><span class="breakdown-key">Account Age</span><span class="breakdown-val ' + (auth.accountAge >= 2 ? 'val-good' : 'val-warn') + '">' + auth.accountAge + ' year(s)</span></div>' +
-        '<div class="breakdown-item"><span class="breakdown-key">Follow Ratio</span><span class="breakdown-val ' + (parseFloat(auth.followerRatio) < 2 ? 'val-good' : 'val-warn') + '">' + auth.followerRatio + 'x</span></div>' +
-        '<div class="breakdown-item"><span class="breakdown-key">Post Frequency</span><span class="breakdown-val val-neutral">' + (Math.floor(Math.random() * 15) + 2) + '/week</span></div>' +
-      '</div>' +
-      '<div class="breakdown-card">' +
-        '<div class="breakdown-card-title">Timing Pattern</div>' +
-        '<div class="breakdown-item"><span class="breakdown-key">Pattern</span><span class="breakdown-val ' + (auth.timingPattern === 'regular' ? 'val-good' : 'val-bad') + '">' + auth.timingPattern.toUpperCase() + '</span></div>' +
-        '<div class="breakdown-item"><span class="breakdown-key">Spike Detected</span><span class="breakdown-val ' + (!auth.hasSpike ? 'val-good' : 'val-bad') + '">' + (auth.hasSpike ? 'YES' : 'NO') + '</span></div>' +
-        '<div class="breakdown-item"><span class="breakdown-key">Peak Hour</span><span class="breakdown-val val-neutral">' + Math.floor(Math.random() * 12 + 8) + ':00 UTC</span></div>' +
+        '<div class="breakdown-card-title">Engagement Signals</div>' +
+        '<div class="breakdown-item"><span class="breakdown-key">Has Link</span><span class="breakdown-val val-neutral">' + (sig.hasLink ? 'YES' : 'NO') + '</span></div>' +
+        '<div class="breakdown-item"><span class="breakdown-key">Call to Action</span><span class="breakdown-val ' + (sig.hasCallToAction ? 'val-warn' : 'val-good') + '">' + (sig.hasCallToAction ? 'YES' : 'NO') + '</span></div>' +
+        '<div class="breakdown-item"><span class="breakdown-key">Sentiment</span><span class="breakdown-val ' + sentimentColor + '">' + (sig.sentiment || 'neutral').toUpperCase() + '</span></div>' +
       '</div>' +
     '</div>';
 
   // Red flags
   var flagsHtml = '<div class="red-flags-title">RED FLAGS (' + auth.flags.length + ')</div>';
   if (auth.flags.length === 0) {
-    flagsHtml += '<div class="no-flags">No suspicious patterns detected — engagement appears genuine</div>';
+    flagsHtml += '<div class="no-flags">No suspicious patterns detected — content appears genuine</div>';
   } else {
     auth.flags.forEach(function(f) {
       flagsHtml += '<div class="red-flag-item">' + f + '</div>';
