@@ -143,6 +143,46 @@ h1,h2,h3{font-family:'Orbitron',monospace;text-transform:uppercase;letter-spacin
 .disclaimer p{font-size:.55rem;color:var(--muted);line-height:1.8;letter-spacing:1px}
 .disclaimer span{color:var(--cyan)}
 
+/* SETTINGS MODAL */
+.settings-btn{background:none;border:1px solid var(--border);color:var(--muted);padding:.4rem .8rem;font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:2px;cursor:pointer;transition:all .25s;text-transform:uppercase}
+.settings-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.9);z-index:1000;display:none;align-items:center;justify-content:center;padding:1rem}
+.modal-box{background:var(--bg2);border:1px solid var(--border);padding:2rem;max-width:420px;width:100%;position:relative}
+.modal-box::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),transparent)}
+.modal-title{font-family:'Orbitron',monospace;font-size:.75rem;color:var(--cyan);letter-spacing:2px;margin-bottom:1.2rem;text-transform:uppercase}
+.modal-field{margin-bottom:1rem}
+.modal-field label{display:block;font-size:.55rem;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:.4rem}
+.modal-field input,.modal-field select{width:100%;padding:.7rem;border:1px solid var(--border);background:rgba(0,255,170,.03);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.75rem;outline:none;transition:all .3s}
+.modal-field input:focus,.modal-field select:focus{border-color:var(--cyan);box-shadow:0 0 0 1px rgba(0,255,170,.15)}
+.modal-field select option{background:var(--bg2);color:var(--text)}
+.modal-actions{display:flex;gap:.8rem;margin-top:1.5rem}
+.modal-actions button{flex:1;padding:.7rem;border:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .25s}
+.btn-save{background:var(--cyan);border-color:var(--cyan);color:#000;font-weight:700}
+.btn-save:hover{box-shadow:0 0 15px rgba(0,255,170,.3)}
+.btn-cancel{background:transparent;color:var(--muted)}
+.btn-cancel:hover{border-color:var(--pink);color:var(--pink)}
+.modal-hint{font-size:.5rem;color:var(--muted);margin-top:.3rem;line-height:1.5}
+.api-status{font-size:.5rem;margin-top:.5rem;padding:.3rem .6rem;display:inline-block}
+.api-status.ok{color:var(--cyan);border:1px solid rgba(0,255,170,.2);background:rgba(0,255,170,.05)}
+.api-status.missing{color:var(--pink);border:1px solid rgba(255,0,110,.2);background:rgba(255,0,110,.05)}
+
+/* LLM SECTION */
+.llm-section{display:none;animation:fadeIn .5s ease}
+.llm-section.active{display:block}
+.llm-card{background:var(--card);border:1px solid var(--border);padding:1.5rem;margin-bottom:1.5rem;position:relative;overflow:hidden}
+.llm-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--purple),transparent)}
+.llm-badge{display:inline-block;padding:.2rem .6rem;font-size:.45rem;letter-spacing:1.5px;text-transform:uppercase;border:1px solid var(--purple);color:var(--purple);background:rgba(139,92,246,.08);margin-bottom:1rem}
+.llm-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.llm-block{background:rgba(139,92,246,.03);border:1px solid rgba(139,92,246,.12);padding:1rem}
+.llm-block-title{font-size:.55rem;letter-spacing:2px;color:var(--purple);text-transform:uppercase;margin-bottom:.6rem;font-weight:700}
+.llm-text{font-size:.65rem;color:var(--text);line-height:1.7}
+.llm-tag{display:inline-block;padding:.15rem .5rem;font-size:.45rem;letter-spacing:1px;text-transform:uppercase;border:1px solid;margin:.15rem .2rem .15rem 0}
+.llm-tag-pos{color:var(--cyan);border-color:rgba(0,255,170,.3);background:rgba(0,255,170,.05)}
+.llm-tag-neg{color:var(--pink);border-color:rgba(255,0,110,.3);background:rgba(255,0,110,.05)}
+.llm-tag-neu{color:var(--muted);border-color:var(--border);background:var(--card)}
+.llm-tag-warn{color:var(--gold);border-color:rgba(251,191,36,.3);background:rgba(251,191,36,.05)}
+.llm-summary{font-size:.7rem;color:var(--text);line-height:1.8;padding:1rem;background:rgba(139,92,246,.03);border-left:2px solid var(--purple)}
+
 /* FOOTER */
 .footer{width:100%;padding:2rem;border-top:1px solid var(--border);text-align:center;margin-top:auto}
 .footer p{font-size:.5rem;color:var(--muted);letter-spacing:2px}
@@ -152,6 +192,7 @@ h1,h2,h3{font-family:'Orbitron',monospace;text-transform:uppercase;letter-spacin
   .score-section{grid-template-columns:1fr}
   .metrics-grid{grid-template-columns:repeat(2,1fr)}
   .breakdown-grid{grid-template-columns:1fr}
+  .llm-grid{grid-template-columns:1fr}
   .nav-links{display:none}
 }
 @media(max-width:480px){
@@ -170,6 +211,7 @@ h1,h2,h3{font-family:'Orbitron',monospace;text-transform:uppercase;letter-spacin
   <div class="nav-links">
     <a href="/">Home</a>
     <a href="https://x.com/calbuldelis69" target="_blank">X</a>
+    <button class="settings-btn" onclick="openSettings()">SETTINGS</button>
   </div>
 </header>
 
@@ -199,6 +241,7 @@ h1,h2,h3{font-family:'Orbitron',monospace;text-transform:uppercase;letter-spacin
     <div class="score-section" id="scoreSection"></div>
     <div class="breakdown" id="breakdownSection"></div>
     <div class="red-flags" id="redFlags"></div>
+    <div class="llm-section" id="llmSection"></div>
     <div class="actions">
       <button class="btn-action" onclick="copyReport()">COPY REPORT</button>
       <button class="btn-action" onclick="resetAnalyzer()">ANALYZE ANOTHER</button>
@@ -210,12 +253,217 @@ h1,h2,h3{font-family:'Orbitron',monospace;text-transform:uppercase;letter-spacin
   </div>
 </main>
 
+<!-- SETTINGS MODAL -->
+<div class="modal-overlay" id="settingsModal">
+  <div class="modal-box">
+    <div class="modal-title">// GEMINI API SETTINGS</div>
+    <div class="modal-field">
+      <label>API Key</label>
+      <input type="password" id="geminiKey" placeholder="AIza...">
+      <div class="modal-hint">Get yours at <a href="https://aistudio.google.com/apikey" target="_blank" style="color:var(--cyan)">aistudio.google.com/apikey</a></div>
+    </div>
+    <div class="modal-field">
+      <label>Model</label>
+      <select id="geminiModel">
+        <option value="gemini-2.5-flash">gemini-2.5-flash (fast, recommended)</option>
+        <option value="gemini-2.5-pro">gemini-2.5-pro (deeper analysis)</option>
+        <option value="gemini-2.0-flash">gemini-2.0-flash (legacy)</option>
+      </select>
+    </div>
+    <div class="modal-field">
+      <label>API Base URL</label>
+      <input type="text" id="geminiBase" placeholder="https://generativelanguage.googleapis.com/v1beta">
+    </div>
+    <div id="apiStatus"></div>
+    <div class="modal-actions">
+      <button class="btn-save" onclick="saveSettings()">SAVE</button>
+      <button class="btn-cancel" onclick="closeSettings()">CANCEL</button>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
 <footer class="footer">
   <p class="glow-text">© 2025 0XYAS TOOLS — BUILT WITH AI</p>
 </footer>
 
 <script>
-// VALIDATE URL
+// ── CONFIG / SETTINGS ──────────────────────────────────────
+var CONFIG_KEY = '0xyas_gemini_config';
+
+function loadConfig() {
+  try {
+    return JSON.parse(localStorage.getItem(CONFIG_KEY)) || {};
+  } catch(e) { return {}; }
+}
+
+function saveConfig(cfg) {
+  localStorage.setItem(CONFIG_KEY, JSON.stringify(cfg));
+}
+
+function getConfig() {
+  var c = loadConfig();
+  return {
+    apiKey: c.apiKey || '',
+    model: c.model || 'gemini-2.5-flash',
+    baseUrl: c.baseUrl || 'https://generativelanguage.googleapis.com/v1beta'
+  };
+}
+
+function openSettings() {
+  var c = getConfig();
+  document.getElementById('geminiKey').value = c.apiKey;
+  document.getElementById('geminiModel').value = c.model;
+  document.getElementById('geminiBase').value = c.baseUrl;
+  updateApiStatus();
+  document.getElementById('settingsModal').style.display = 'flex';
+}
+
+function closeSettings() {
+  document.getElementById('settingsModal').style.display = 'none';
+}
+
+function saveSettings() {
+  var cfg = {
+    apiKey: document.getElementById('geminiKey').value.trim(),
+    model: document.getElementById('geminiModel').value,
+    baseUrl: document.getElementById('geminiBase').value.trim() || 'https://generativelanguage.googleapis.com/v1beta'
+  };
+  saveConfig(cfg);
+  updateApiStatus();
+  closeSettings();
+}
+
+function updateApiStatus() {
+  var c = getConfig();
+  var el = document.getElementById('apiStatus');
+  if (c.apiKey) {
+    el.innerHTML = '<span class="api-status ok">API KEY SET — ' + c.model + '</span>';
+  } else {
+    el.innerHTML = '<span class="api-status missing">NO API KEY — LLM analysis disabled</span>';
+  }
+}
+
+// ── GEMINI LLM CALL ────────────────────────────────────────
+function callGemini(postText, author) {
+  var c = getConfig();
+  if (!c.apiKey) return Promise.resolve(null);
+
+  var prompt = 'You are an X/Twitter post authenticity analyst. Analyze the following post and respond in strict JSON format.\n\n' +
+    'Post by: ' + author + '\n' +
+    'Post content: """' + postText + '"""\n\n' +
+    'Respond with this exact JSON structure (no markdown, no code fences):\n' +
+    '{\n' +
+    '  "tone": "one word describing tone (e.g. informative, promotional, sarcastic, humble, aggressive, casual, professional)",\n' +
+    '  "clickbait_score": 0-100 (0=not clickbait at all, 100=pure clickbait),\n' +
+    '  "clickbait_explanation": "brief explanation of clickbait assessment",\n' +
+    '  "sentiment": "positive|negative|neutral|mixed",\n' +
+    '  "sentiment_detail": "one sentence explaining sentiment",\n' +
+    '  "reply_quality": {\n' +
+    '    "assessment": "genuine|mixed|likely_fake",\n' +
+    '    "explanation": "brief explanation"\n' +
+    '  },\n' +
+    '  "red_flags": ["list of specific red flags found in the text, or empty array"],\n' +
+    '  "green_flags": ["list of positive signals found, or empty array"],\n' +
+    '  "summary": "2-3 sentence natural language summary of this post quality and authenticity"\n' +
+    '}';
+
+  var url = c.baseUrl + '/models/' + c.model + ':generateContent?key=' + c.apiKey;
+
+  return fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      contents: [{ parts: [{ text: prompt }] }],
+      generationConfig: { temperature: 0.3, maxOutputTokens: 1024 }
+    })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (data.error) throw new Error(data.error.message || 'Gemini API error');
+    var text = data.candidates && data.candidates[0] && data.candidates[0].content &&
+               data.candidates[0].content.parts && data.candidates[0].content.parts[0] ?
+               data.candidates[0].content.parts[0].text : '';
+    // Clean up: remove markdown fences if present
+    text = text.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/\s*```$/i, '').trim();
+    return JSON.parse(text);
+  })
+  .catch(function(e) {
+    console.error('Gemini error:', e);
+    return null;
+  });
+}
+
+// ── RENDER LLM RESULTS ─────────────────────────────────────
+function renderLlmResults(llm) {
+  if (!llm) {
+    document.getElementById('llmSection').innerHTML = '';
+    document.getElementById('llmSection').classList.remove('active');
+    return;
+  }
+
+  var clickbaitColor = llm.clickbait_score < 30 ? 'val-good' : llm.clickbait_score < 60 ? 'val-warn' : 'val-bad';
+  var sentimentColor = llm.sentiment === 'positive' || llm.sentiment === 'mixed' ? 'llm-tag-pos' :
+                       llm.sentiment === 'negative' ? 'llm-tag-neg' : 'llm-tag-neu';
+  var toneColor = 'llm-tag-neu';
+
+  var redFlagsHtml = '';
+  if (llm.red_flags && llm.red_flags.length > 0) {
+    llm.red_flags.forEach(function(f) {
+      redFlagsHtml += '<div class="llm-tag llm-tag-neg">' + f + '</div>';
+    });
+  } else {
+    redFlagsHtml = '<div class="llm-tag llm-tag-pos">None detected</div>';
+  }
+
+  var greenFlagsHtml = '';
+  if (llm.green_flags && llm.green_flags.length > 0) {
+    llm.green_flags.forEach(function(f) {
+      greenFlagsHtml += '<div class="llm-tag llm-tag-pos">' + f + '</div>';
+    });
+  } else {
+    greenFlagsHtml = '<div class="llm-tag llm-tag-neu">None detected</div>';
+  }
+
+  var html =
+    '<div class="llm-card">' +
+      '<div class="llm-badge">GEMINI LLM ANALYSIS</div>' +
+      '<div class="llm-grid">' +
+        '<div class="llm-block">' +
+          '<div class="llm-block-title">Tone & Clickbait</div>' +
+          '<div style="margin-bottom:.6rem">' +
+            '<span class="llm-tag ' + toneColor + '">' + (llm.tone || 'unknown') + '</span>' +
+            '<span class="llm-tag ' + sentimentColor + '">' + (llm.sentiment || 'neutral') + '</span>' +
+          '</div>' +
+          '<div class="llm-text"><strong style="color:var(--pink)">Clickbait: ' + (llm.clickbait_score || 0) + '/100</strong></div>' +
+          '<div class="llm-text" style="margin-top:.3rem;font-size:.6rem;color:var(--muted)">' + (llm.clickbait_explanation || '') + '</div>' +
+        '</div>' +
+        '<div class="llm-block">' +
+          '<div class="llm-block-title">Sentiment & Reply Quality</div>' +
+          '<div class="llm-text" style="margin-bottom:.4rem">' + (llm.sentiment_detail || '') + '</div>' +
+          '<div class="llm-text"><strong>Reply Quality:</strong> ' + (llm.reply_quality ? llm.reply_quality.assessment : 'unknown') + '</div>' +
+          '<div class="llm-text" style="font-size:.6rem;color:var(--muted);margin-top:.2rem">' + (llm.reply_quality ? llm.reply_quality.explanation : '') + '</div>' +
+        '</div>' +
+        '<div class="llm-block">' +
+          '<div class="llm-block-title">Red Flags</div>' +
+          '<div>' + redFlagsHtml + '</div>' +
+        '</div>' +
+        '<div class="llm-block">' +
+          '<div class="llm-block-title">Green Flags</div>' +
+          '<div>' + greenFlagsHtml + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div style="margin-top:1rem">' +
+        '<div class="llm-block-title" style="margin-bottom:.5rem">SUMMARY</div>' +
+        '<div class="llm-summary">' + (llm.summary || 'No summary available.') + '</div>' +
+      '</div>' +
+    '</div>';
+
+  document.getElementById('llmSection').innerHTML = html;
+  document.getElementById('llmSection').classList.add('active');
+}
+
+// ── VALIDATE URL ────────────────────────────────────────────
 function validateUrl(url) {
   var pattern = /^(https?:\/\/)?(www\.)?(x\.com|twitter\.com)\/\w+\/status\/\d+/;
   return pattern.test(url);
@@ -254,45 +502,34 @@ function calculateAuthenticity(metrics, username) {
   var score = 70;
   var flags = [];
 
-  // Engagement rate analysis
   if (metrics.engRate > 15) { score -= 25; flags.push('Extremely high engagement rate (' + metrics.engRate.toFixed(1) + '%) — likely bot activity'); }
   else if (metrics.engRate > 8) { score -= 10; flags.push('Above-average engagement rate (' + metrics.engRate.toFixed(1) + '%) — monitor closely'); }
   else if (metrics.engRate < 0.5) { score -= 5; flags.push('Very low engagement rate (' + metrics.engRate.toFixed(1) + '%) — possible low-quality content'); }
 
-  // Like/Retweet ratio
   var likeRtRatio = metrics.likes / Math.max(metrics.retweets, 1);
   if (likeRtRatio > 20) { score -= 10; flags.push('Abnormal like/retweet ratio — possible engagement farming'); }
   else if (likeRtRatio < 0.5) { score -= 5; flags.push('Unusual retweet-heavy pattern'); }
 
-  // Reply quality simulation
   var replyQuality = Math.random() > 0.3 ? 'genuine' : 'generic';
   if (replyQuality === 'generic') { score -= 8; flags.push('Some replies appear generic/bot-generated'); }
 
-  // Account age simulation
   var accountAge = Math.floor(Math.random() * 4) + 1;
   if (accountAge < 2) { score -= 10; flags.push('Newer account detected (' + accountAge + ' year(s))'); }
 
-  // Follower ratio simulation
   var followerRatio = (Math.random() * 5 + 0.5).toFixed(1);
   if (followerRatio > 4) { score -= 8; flags.push('High following/follower ratio (' + followerRatio + 'x)'); }
 
-  // Timing pattern
   var timingPattern = Math.random() > 0.7 ? 'suspicious' : 'regular';
   if (timingPattern === 'suspicious') { score -= 7; flags.push('Unusual posting time pattern detected'); }
 
-  // Spike detection
   var hasSpike = Math.random() > 0.75;
   if (hasSpike) { score -= 12; flags.push('Sudden engagement spike detected — possible bot injection'); }
 
-  // Clamp score
   score = Math.max(0, Math.min(100, score));
-
-  // Traffic light
-  var trafficLight = score >= 60 ? 'green' : score >= 30 ? 'yellow' : 'red';
 
   return {
     score: score,
-    trafficLight: trafficLight,
+    trafficLight: score >= 60 ? 'green' : score >= 30 ? 'yellow' : 'red',
     flags: flags,
     replyQuality: replyQuality,
     accountAge: accountAge,
@@ -312,7 +549,7 @@ function formatNum(n) {
 // API BASE URL - set to your VPS backend
 var API_BASE = 'http://'+window.location.hostname+':3100';
 
-// ANALYZE POST
+// ── ANALYZE POST ────────────────────────────────────────────
 function analyzePost() {
   var url = document.getElementById('postUrl').value.trim();
   var btn = document.getElementById('analyzeBtn');
@@ -325,7 +562,9 @@ function analyzePost() {
   btn.disabled = true;
   loading.classList.add('active');
   results.classList.remove('active');
+  document.getElementById('llmSection').classList.remove('active');
 
+  // 1) Fetch oembed data from our API
   fetch(API_BASE + '/api/analyze', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -336,9 +575,20 @@ function analyzePost() {
     if (!data.ok) throw new Error(data.error || 'Analysis failed');
 
     var username = data.post.authorHandle.replace('@', '') || extractUser(url);
-
     renderResults(url, username, null, data.authenticity, data.post);
 
+    // 2) If Gemini key is set, run LLM analysis in parallel
+    var c = getConfig();
+    if (c.apiKey && data.post.text) {
+      document.querySelector('.loading-text').textContent = 'RUNNING GEMINI LLM ANALYSIS...';
+      return callGemini(data.post.text, data.post.author).then(function(llm) {
+        renderLlmResults(llm);
+      });
+    } else {
+      renderLlmResults(null);
+    }
+  })
+  .then(function() {
     loading.classList.remove('active');
     results.classList.add('active');
     btn.disabled = false;
@@ -350,12 +600,11 @@ function analyzePost() {
   });
 }
 
-// RENDER RESULTS
+// ── RENDER RESULTS ──────────────────────────────────────────
 function renderResults(url, username, postId, auth, postData) {
   var badgeClass = auth.trafficLight === 'green' ? 'badge-green' : auth.trafficLight === 'yellow' ? 'badge-yellow' : 'badge-red';
   var badgeText = auth.trafficLight === 'green' ? 'GENUINE' : auth.trafficLight === 'yellow' ? 'SUSPICIOUS' : 'LIKELY BOT';
 
-  // Post preview
   document.getElementById('postPreview').innerHTML =
     '<div class="post-header">' +
       '<div class="post-avatar">' + username.charAt(0).toUpperCase() + '</div>' +
@@ -368,7 +617,6 @@ function renderResults(url, username, postId, auth, postData) {
     '<div class="post-content">' + (postData.text || '(no text)') + '</div>' +
     '<div class="post-url">' + url + '</div>';
 
-  // Score
   var scoreColor = auth.trafficLight === 'green' ? 'var(--cyan)' : auth.trafficLight === 'yellow' ? 'var(--gold)' : 'var(--pink)';
   var activeDot = auth.trafficLight === 'green' ? 'active-green' : auth.trafficLight === 'yellow' ? 'active-yellow' : 'active-red';
   var sig = auth.signals || {};
@@ -392,7 +640,6 @@ function renderResults(url, username, postId, auth, postData) {
       '<div class="metric-card"><div class="metric-value">' + (sig.sentiment || 'neutral').toUpperCase() + '</div><div class="metric-label">Sentiment</div></div>' +
     '</div>';
 
-  // Breakdown
   var sentimentColor = (sig.sentiment === 'very_positive' || sig.sentiment === 'positive') ? 'val-good' :
                        (sig.sentiment === 'very_negative' || sig.sentiment === 'negative') ? 'val-bad' : 'val-neutral';
 
@@ -414,7 +661,6 @@ function renderResults(url, username, postId, auth, postData) {
       '</div>' +
     '</div>';
 
-  // Red flags
   var flagsHtml = '<div class="red-flags-title">RED FLAGS (' + auth.flags.length + ')</div>';
   if (auth.flags.length === 0) {
     flagsHtml += '<div class="no-flags">No suspicious patterns detected — content appears genuine</div>';
@@ -439,11 +685,17 @@ function resetAnalyzer() {
   document.getElementById('postUrl').value = '';
   document.getElementById('results').classList.remove('active');
   document.getElementById('loading').classList.remove('active');
+  document.getElementById('llmSection').classList.remove('active');
 }
 
 // ENTER KEY
 document.getElementById('postUrl').addEventListener('keydown', function(e) {
   if (e.key === 'Enter') analyzePost();
+});
+
+// MODAL CLICK OUTSIDE
+document.getElementById('settingsModal').addEventListener('click', function(e) {
+  if (e.target === this) closeSettings();
 });
 </script>
 </body>
