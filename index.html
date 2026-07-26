@@ -211,7 +211,6 @@ h1,h2,h3{font-family:'Orbitron',monospace;text-transform:uppercase;letter-spacin
   <div class="nav-links">
     <a href="/">Home</a>
     <a href="https://x.com/calbuldelis69" target="_blank">X</a>
-    <button class="settings-btn" onclick="openSettings()">SETTINGS</button>
   </div>
 </header>
 
@@ -253,102 +252,19 @@ h1,h2,h3{font-family:'Orbitron',monospace;text-transform:uppercase;letter-spacin
   </div>
 </main>
 
-<!-- SETTINGS MODAL -->
-<div class="modal-overlay" id="settingsModal">
-  <div class="modal-box">
-    <div class="modal-title">// GEMINI API SETTINGS</div>
-    <div class="modal-field">
-      <label>API Key</label>
-      <input type="password" id="geminiKey" placeholder="AIza...">
-      <div class="modal-hint">Get yours at <a href="https://aistudio.google.com/apikey" target="_blank" style="color:var(--cyan)">aistudio.google.com/apikey</a></div>
-    </div>
-    <div class="modal-field">
-      <label>Model</label>
-      <select id="geminiModel">
-        <option value="gemini-2.5-flash">gemini-2.5-flash (fast, recommended)</option>
-        <option value="gemini-2.5-pro">gemini-2.5-pro (deeper analysis)</option>
-        <option value="gemini-2.0-flash">gemini-2.0-flash (legacy)</option>
-      </select>
-    </div>
-    <div class="modal-field">
-      <label>API Base URL</label>
-      <input type="text" id="geminiBase" placeholder="https://generativelanguage.googleapis.com/v1beta">
-    </div>
-    <div id="apiStatus"></div>
-    <div class="modal-actions">
-      <button class="btn-save" onclick="saveSettings()">SAVE</button>
-      <button class="btn-cancel" onclick="closeSettings()">CANCEL</button>
-    </div>
-  </div>
-</div>
-
 <!-- FOOTER -->
 <footer class="footer">
   <p class="glow-text">© 2025 0XYAS TOOLS — BUILT WITH AI</p>
 </footer>
 
 <script>
-// ── CONFIG / SETTINGS ──────────────────────────────────────
-var CONFIG_KEY = '0xyas_gemini_config';
-
-function loadConfig() {
-  try {
-    return JSON.parse(localStorage.getItem(CONFIG_KEY)) || {};
-  } catch(e) { return {}; }
-}
-
-function saveConfig(cfg) {
-  localStorage.setItem(CONFIG_KEY, JSON.stringify(cfg));
-}
-
-function getConfig() {
-  var c = loadConfig();
-  return {
-    apiKey: c.apiKey || '',
-    model: c.model || 'gemini-2.5-flash',
-    baseUrl: c.baseUrl || 'https://generativelanguage.googleapis.com/v1beta'
-  };
-}
-
-function openSettings() {
-  var c = getConfig();
-  document.getElementById('geminiKey').value = c.apiKey;
-  document.getElementById('geminiModel').value = c.model;
-  document.getElementById('geminiBase').value = c.baseUrl;
-  updateApiStatus();
-  document.getElementById('settingsModal').style.display = 'flex';
-}
-
-function closeSettings() {
-  document.getElementById('settingsModal').style.display = 'none';
-}
-
-function saveSettings() {
-  var cfg = {
-    apiKey: document.getElementById('geminiKey').value.trim(),
-    model: document.getElementById('geminiModel').value,
-    baseUrl: document.getElementById('geminiBase').value.trim() || 'https://generativelanguage.googleapis.com/v1beta'
-  };
-  saveConfig(cfg);
-  updateApiStatus();
-  closeSettings();
-}
-
-function updateApiStatus() {
-  var c = getConfig();
-  var el = document.getElementById('apiStatus');
-  if (c.apiKey) {
-    el.innerHTML = '<span class="api-status ok">API KEY SET — ' + c.model + '</span>';
-  } else {
-    el.innerHTML = '<span class="api-status missing">NO API KEY — LLM analysis disabled</span>';
-  }
-}
+// ── CONFIG (hardcoded) ─────────────────────────────────────
+var GEMINI_API_KEY = 'AIzaSyBP5fINA0fA2CtTS8EPerG9TtxBcKTRBFE';
+var GEMINI_MODEL = 'gemini-2.5-flash';
+var GEMINI_BASE_URL = 'https://generativelanguage.googleapis.com/v1beta';
 
 // ── GEMINI LLM CALL ────────────────────────────────────────
 function callGemini(postText, author) {
-  var c = getConfig();
-  if (!c.apiKey) return Promise.resolve(null);
-
   var prompt = 'You are an X/Twitter post authenticity analyst. Analyze the following post and respond in strict JSON format.\n\n' +
     'Post by: ' + author + '\n' +
     'Post content: """' + postText + '"""\n\n' +
@@ -368,7 +284,7 @@ function callGemini(postText, author) {
     '  "summary": "2-3 sentence natural language summary of this post quality and authenticity"\n' +
     '}';
 
-  var url = c.baseUrl + '/models/' + c.model + ':generateContent?key=' + c.apiKey;
+  var url = GEMINI_BASE_URL + '/models/' + GEMINI_MODEL + ':generateContent?key=' + GEMINI_API_KEY;
 
   return fetch(url, {
     method: 'POST',
@@ -384,7 +300,6 @@ function callGemini(postText, author) {
     var text = data.candidates && data.candidates[0] && data.candidates[0].content &&
                data.candidates[0].content.parts && data.candidates[0].content.parts[0] ?
                data.candidates[0].content.parts[0].text : '';
-    // Clean up: remove markdown fences if present
     text = text.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/\s*```$/i, '').trim();
     return JSON.parse(text);
   })
@@ -577,16 +492,11 @@ function analyzePost() {
     var username = data.post.authorHandle.replace('@', '') || extractUser(url);
     renderResults(url, username, null, data.authenticity, data.post);
 
-    // 2) If Gemini key is set, run LLM analysis in parallel
-    var c = getConfig();
-    if (c.apiKey && data.post.text) {
-      document.querySelector('.loading-text').textContent = 'RUNNING GEMINI LLM ANALYSIS...';
-      return callGemini(data.post.text, data.post.author).then(function(llm) {
-        renderLlmResults(llm);
-      });
-    } else {
-      renderLlmResults(null);
-    }
+    // 2) Run LLM analysis
+    document.querySelector('.loading-text').textContent = 'RUNNING GEMINI LLM ANALYSIS...';
+    return callGemini(data.post.text, data.post.author).then(function(llm) {
+      renderLlmResults(llm);
+    });
   })
   .then(function() {
     loading.classList.remove('active');
@@ -691,11 +601,6 @@ function resetAnalyzer() {
 // ENTER KEY
 document.getElementById('postUrl').addEventListener('keydown', function(e) {
   if (e.key === 'Enter') analyzePost();
-});
-
-// MODAL CLICK OUTSIDE
-document.getElementById('settingsModal').addEventListener('click', function(e) {
-  if (e.target === this) closeSettings();
 });
 </script>
 </body>
