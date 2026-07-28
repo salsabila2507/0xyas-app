@@ -149,7 +149,7 @@ strong{font-weight:600}
 .nav a:hover{color:var(--color-primary);background:var(--color-surface)}
 
 /* ── layout ────────────────────────────────────────────────────────── */
-.main{width:100%;max-width:920px;padding:var(--space-2xl) var(--space-lg);flex:1}
+.main{width:100%;max-width:1200px;padding:var(--space-2xl) var(--space-lg);flex:1}
 
 /* ── hero ──────────────────────────────────────────────────────────── */
 .hero{margin-bottom:var(--space-xl)}
@@ -238,7 +238,7 @@ strong{font-weight:600}
 }
 .loading-steps{
   display:flex;flex-direction:column;gap:var(--space-sm);
-  max-width:340px;margin:0 auto;text-align:left
+  max-width:400px;margin:0 auto;text-align:left
 }
 .loading-step{
   display:flex;align-items:center;gap:var(--space-sm);
@@ -663,6 +663,247 @@ strong{font-weight:600}
   .spam-bar-label{width:84px;font-size:var(--fs-xs)}
   .nav a{padding:0 var(--space-sm)}
 }
+
+/* ══════════════════════════════════════════════════════════════════════
+   2-COLUMN RESULTS GRID
+   ══════════════════════════════════════════════════════════════════════ */
+.results-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:var(--space-xl);align-items:start
+}
+.results-col{display:flex;flex-direction:column;gap:var(--space-md)}
+.col-label{
+  display:flex;align-items:center;gap:var(--space-sm);
+  padding:var(--space-sm) var(--space-md);
+  font-size:var(--fs-xs);font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--color-foreground-3);border-bottom:2px solid var(--color-border);
+  margin-bottom:var(--space-sm)
+}
+.col-label .icon{color:var(--color-primary)}
+.col-label.coasty{color:var(--color-accent-text)}
+.col-label.coasty .icon{color:var(--color-accent)}
+.coasty-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:2px 8px;border-radius:var(--radius-pill);margin-left:auto;
+  font-size:10px;font-weight:700;letter-spacing:.08em;
+  color:var(--color-accent-text);background:var(--tint-accent)
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   ENHANCED LOADING ANIMATIONS
+   ══════════════════════════════════════════════════════════════════════ */
+@keyframes orbGlow{
+  0%,100%{box-shadow:0 0 20px rgba(15,110,113,.2)}
+  50%{box-shadow:0 0 40px rgba(15,110,113,.4)}
+}
+@keyframes orbSpin{
+  to{transform:rotate(360deg)}
+}
+@keyframes orbPulse{
+  0%,100%{transform:scale(1);opacity:.6}
+  50%{transform:scale(1.15);opacity:1}
+}
+@keyframes shimmer{
+  0%{transform:translateX(-100%)}
+  100%{transform:translateX(250%)}
+}
+@keyframes checkPop{
+  0%{transform:scale(0.6);opacity:0}
+  50%{transform:scale(1.2)}
+  100%{transform:scale(1);opacity:1}
+}
+@keyframes stepDoneFlash{
+  0%{background:var(--tint-success)}
+  50%{background:rgba(27,107,69,.25)}
+  100%{background:var(--tint-success)}
+}
+@keyframes slideUp{
+  from{opacity:0;transform:translateY(24px)}
+  to{opacity:1;transform:translateY(0)}
+}
+@keyframes scanLine{
+  0%{top:0;opacity:0}
+  10%{opacity:1}
+  90%{opacity:1}
+  100%{top:100%;opacity:0}
+}
+@keyframes cardReveal{
+  from{opacity:0;transform:translateY(16px) scale(0.97)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+@keyframes scanPulse{
+  0%,100%{opacity:.7}
+  50%{opacity:1}
+}
+@keyframes progressGlow{
+  0%,100%{filter:brightness(1)}
+  50%{filter:brightness(1.3)}
+}
+
+.loading-orb{
+  width:56px;height:56px;margin:0 auto var(--space-md);position:relative;
+  animation:orbGlow 2.5s ease-in-out infinite
+}
+.loading-orb::before{
+  content:'';position:absolute;inset:0;border-radius:50%;
+  border:3px solid var(--color-muted);
+  border-top-color:var(--color-primary);border-right-color:var(--color-accent);
+  animation:orbSpin 1s linear infinite
+}
+.loading-orb .core{
+  position:absolute;inset:14px;border-radius:50%;
+  background:linear-gradient(135deg,var(--color-primary),var(--color-accent));
+  animation:orbPulse 1.6s ease infinite
+}
+
+.loading-bar-fill{
+  position:relative;overflow:visible
+}
+.loading-bar-fill::after{
+  content:'';position:absolute;top:0;left:0;right:0;bottom:0;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent);
+  animation:shimmer 2s ease-in-out infinite
+}
+
+.loading-step{
+  display:flex;align-items:center;gap:var(--space-sm);
+  font-size:var(--fs-sm);color:var(--color-foreground-3);
+  transition:all .3s ease
+}
+.loading-step.done .step-icon{
+  animation:checkPop .4s ease forwards;
+  background:var(--tint-success);color:var(--color-success-text);
+  border-color:transparent
+}
+.loading-step.done .step-icon svg{display:block}
+.loading-step.active{
+  color:var(--color-primary);font-weight:600;
+  text-shadow:0 0 20px rgba(15,110,113,.15)
+}
+.loading-step.active .step-icon{
+  border-color:var(--color-primary);
+  box-shadow:0 0 12px rgba(15,110,113,.25);
+  animation:orbPulse 1.5s ease infinite
+}
+
+/* Screenshot preview in loading */
+.loading-screenshot{
+  display:none;margin-top:var(--space-lg);position:relative;
+  max-width:380px;margin-left:auto;margin-right:auto;
+  animation:slideUp .5s ease;border:var(--panel);overflow:hidden
+}
+.loading-screenshot.active{display:block}
+.loading-screenshot img{
+  width:100%;display:block;
+  filter:saturate(.85) contrast(1.05)
+}
+.loading-screenshot .scan-line{
+  position:absolute;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,transparent,var(--color-primary),var(--color-accent),transparent);
+  animation:scanLine 2.5s ease-in-out infinite;
+  box-shadow:0 0 15px var(--color-primary),0 0 30px rgba(15,110,113,.3)
+}
+.loading-screenshot .scan-label{
+  position:absolute;bottom:8px;right:8px;
+  padding:4px 10px;border-radius:var(--radius-pill);
+  background:rgba(20,20,15,.85);color:var(--color-primary);
+  font-size:var(--fs-xs);font-weight:700;letter-spacing:.06em;
+  animation:scanPulse 1.5s ease infinite;
+  display:flex;align-items:center;gap:4px
+}
+.loading-screenshot .scan-label .icon{width:12px;height:12px}
+
+/* ══════════════════════════════════════════════════════════════════════
+   VISUAL ANALYZER SECTION
+   ══════════════════════════════════════════════════════════════════════ */
+.visual-screenshot-wrap{
+  position:relative;overflow:hidden;border:var(--panel);margin-bottom:var(--space-md)
+}
+.visual-screenshot-wrap img{
+  width:100%;display:block;cursor:pointer;
+  transition:filter var(--transition)
+}
+.visual-screenshot-wrap img:hover{filter:brightness(1.05)}
+.visual-screenshot-tag{
+  position:absolute;top:8px;left:8px;
+  padding:4px 10px;border-radius:var(--radius-pill);
+  background:rgba(20,20,15,.8);color:var(--color-on-primary);
+  font-size:var(--fs-xs);font-weight:700;letter-spacing:.06em;
+  display:flex;align-items:center;gap:4px
+}
+.visual-score-hero{display:flex;align-items:center;gap:var(--space-lg);margin-bottom:var(--space-md)}
+.visual-score-ring{position:relative;width:100px;height:100px;flex-shrink:0}
+.visual-score-ring svg{width:100%;height:100%}
+.visual-score-center{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center
+}
+.visual-score-num{
+  font-family:'Noto Serif JP',serif;font-size:var(--fs-xl);font-weight:700;line-height:1
+}
+.visual-score-lbl{font-size:var(--fs-xs);color:var(--color-foreground-3);margin-top:2px}
+.visual-verdict{flex:1;min-width:0}
+.visual-verdict-text{
+  font-family:'Noto Serif JP',serif;font-size:var(--fs-lg);font-weight:700;
+  margin-bottom:4px;display:flex;align-items:center;gap:var(--space-sm)
+}
+.visual-verdict-sub{font-size:var(--fs-sm);color:var(--color-foreground-2);line-height:1.6}
+
+.visual-detail-row{
+  display:flex;gap:var(--space-sm);margin-bottom:var(--space-md);flex-wrap:wrap
+}
+.visual-detail-chip{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:5px 12px;border-radius:var(--radius-pill);
+  font-size:var(--fs-xs);font-weight:600;letter-spacing:.04em;
+  border:1px solid var(--color-border);background:var(--color-surface)
+}
+.visual-detail-chip .icon{width:14px;height:14px}
+.visual-detail-chip.image{color:var(--color-primary);border-color:var(--color-primary)}
+.visual-detail-chip.video{color:var(--color-accent-text);border-color:var(--color-accent)}
+.visual-detail-chip.none{color:var(--color-foreground-3)}
+.visual-detail-chip.original{color:var(--color-success-text);border-color:var(--color-success)}
+.visual-detail-chip.repost,.visual-detail-chip.edited,.visual-detail-chip.stock{color:var(--color-warning-text);border-color:var(--color-warning)}
+.visual-detail-chip.screenshot{color:var(--color-destructive-text);border-color:var(--color-destructive)}
+
+.visual-desc{
+  font-size:var(--fs-base);line-height:1.7;color:var(--color-foreground-2);
+  padding:var(--space-md);background:var(--color-muted);margin-bottom:var(--space-md)
+}
+.visual-flags-section{margin-bottom:var(--space-md)}
+.visual-flags-title{
+  display:flex;align-items:center;gap:var(--space-sm);
+  font-size:var(--fs-sm);font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  margin-bottom:var(--space-sm)
+}
+.visual-flags-title.red{color:var(--color-destructive-text)}
+.visual-flags-title.green{color:var(--color-success-text)}
+.visual-flag-item{
+  display:flex;align-items:flex-start;gap:var(--space-sm);
+  font-size:var(--fs-sm);color:var(--color-foreground-2);
+  line-height:1.55;padding:4px 0
+}
+.visual-flag-item .icon{margin-top:2px;flex-shrink:0}
+.visual-qual-item{
+  display:flex;align-items:flex-start;gap:var(--space-sm);
+  font-size:var(--fs-sm);color:var(--color-success-text);
+  line-height:1.55;padding:4px 0
+}
+.visual-qual-item .icon{margin-top:2px;flex-shrink:0}
+
+.visual-loading-placeholder{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:var(--space-3xl) var(--space-lg);text-align:center;
+  color:var(--color-foreground-3)
+}
+.visual-loading-placeholder .icon{width:32px;height:32px;margin-bottom:var(--space-md);animation:orbPulse 1.5s ease infinite}
+
+/* ══════════════════════════════════════════════════════════════════════
+   RESPONSIVE: 2-column → 1-column
+   ══════════════════════════════════════════════════════════════════════ */
+@media(max-width:900px){
+  .results-grid{grid-template-columns:1fr;gap:var(--space-lg)}
+  .main{max-width:100%}
+}
 </style>
 </head>
 <body>
@@ -701,6 +942,9 @@ strong{font-weight:600}
     <symbol id="i-bar-chart" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></symbol>
     <symbol id="i-shield-check" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></symbol>
     <symbol id="i-external" viewBox="0 0 24 24"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></symbol>
+    <symbol id="i-film" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M7 3v18"/><path d="M3 7.5h4"/><path d="M3 12h18"/><path d="M3 16.5h4"/><path d="M17 3v18"/><path d="M17 7.5h4"/><path d="M17 16.5h4"/></symbol>
+    <symbol id="i-image" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></symbol>
+    <symbol id="i-rotate-ccw" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></symbol>
   </defs>
 </svg>
 
@@ -747,22 +991,44 @@ strong{font-weight:600}
         <div class="loading-step" id="step4"><span class="step-icon">4</span>Checking XORA authenticity</div>
         <div class="loading-step" id="step5"><span class="step-icon">5</span>Running AI analysis</div>
         <div class="loading-step" id="step6"><span class="step-icon">6</span>Loading replies &amp; discussion</div>
+        <div class="loading-step" id="step7"><span class="step-icon">7</span>Coasty vision scan</div>
       </div>
       <div class="loading-bar"><div class="loading-bar-fill" id="loadingBar"></div></div>
+      <div class="loading-screenshot" id="loadingScreenshot">
+        <img id="loadingScreenshotImg" src="" alt="Post screenshot">
+        <div class="scan-line"></div>
+        <div class="scan-label"><svg class="icon" aria-hidden="true"><use href="#i-eye"/></svg>Coasty is watching</div>
+      </div>
     </div>
   </div>
 
   <div class="results" id="results">
-    <div id="postPreview"></div>
-    <div id="engagementRow"></div>
-    <div id="scoreHero"></div>
-    <div id="spamCard"></div>
-    <div id="xoraSection"></div>
-    <div id="metricsRow"></div>
-    <div id="breakdown"></div>
-    <div id="replyQualitySection"></div>
-    <div id="redFlags"></div>
-    <div id="llmSection"></div>
+    <div class="results-grid">
+      <!-- LEFT: Text Analyzer -->
+      <div class="results-col" id="textCol">
+        <div class="col-label"><svg class="icon" aria-hidden="true"><use href="#i-file-text"/></svg>Text Analysis</div>
+        <div id="postPreview"></div>
+        <div id="engagementRow"></div>
+        <div id="scoreHero"></div>
+        <div id="spamCard"></div>
+        <div id="xoraSection"></div>
+        <div id="metricsRow"></div>
+        <div id="breakdown"></div>
+        <div id="replyQualitySection"></div>
+        <div id="redFlags"></div>
+        <div id="llmSection"></div>
+      </div>
+      <!-- RIGHT: Coasty Visual Analyzer -->
+      <div class="results-col" id="visualCol">
+        <div class="col-label coasty"><svg class="icon" aria-hidden="true"><use href="#i-eye"/></svg>Coasty Visual Analysis<span class="coasty-badge">POWERED BY COASTY</span></div>
+        <div id="visualContent">
+          <div class="visual-loading-placeholder">
+            <svg class="icon" aria-hidden="true"><use href="#i-loader"/></svg>
+            <p>Waiting for text analysis to start…</p>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="actions">
       <button class="btn-action" onclick="copyReport()">
         <svg class="icon" aria-hidden="true"><use href="#i-copy"/></svg>Copy report
@@ -803,6 +1069,29 @@ function callGemini(text,author){
     if(d.error)throw new Error(d.error);
     return d.analysis;
   }).catch(function(e){console.error(e);return null})
+}
+
+// ── COASTY VISUAL ──────────────────────────────────────────
+function callCoastyVisual(url){
+  return fetch(API_BASE+'/api/visual',{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({url:url})
+  }).then(function(r){return r.json()}).then(function(d){
+    if(d.error)throw new Error(d.error);
+    return d;
+  }).catch(function(e){console.error('[coasty]',e);return null})
+}
+
+// Show screenshot preview during loading
+function showLoadingScreenshot(base64){
+  if(!base64)return;
+  var el=document.getElementById('loadingScreenshot');
+  var img=document.getElementById('loadingScreenshotImg');
+  img.src='data:image/png;base64,'+base64;
+  el.classList.add('active');
+}
+function hideLoadingScreenshot(){
+  document.getElementById('loadingScreenshot').classList.remove('active');
 }
 
 // ── RENDER POST ───────────────────────────────────────────
@@ -1245,6 +1534,111 @@ function renderLlm(llm){
     '</div>'
 }
 
+// ── RENDER COASTY VISUAL ANALYSIS ──────────────────────────
+function renderVisualAnalysis(data){
+  if(!data||!data.visual){
+    document.getElementById('visualContent').innerHTML=
+      '<div class="card"><div class="visual-loading-placeholder">'+
+        '<svg class="icon" aria-hidden="true"><use href="#i-circle-alert"/></svg>'+
+        '<p>'+(data&&data.error?data.error:'Visual analysis unavailable')+'</p>'+
+      '</div></div>';
+    return;
+  }
+  var v=data.visual;
+  var score=v.score||0;
+  var s=score>=70?'green':score>=40?'yellow':'red';
+  var color=STATUS[s].token;
+  var r=42,c=2*Math.PI*r,offset=c-(score/100)*c;
+  var verdict=score>=70?'Visual looks authentic':score>=40?'Mixed visual signals':'Visual suspicious';
+  var verdictSub=v.description?v.description.slice(0,200):'Analysis of visual content';
+
+  var html='';
+
+  // Screenshot preview
+  if(data.screenshot){
+    html+='<div class="visual-screenshot-wrap">'+
+      '<img src="data:image/png;base64,'+data.screenshot+'" alt="Post screenshot">'+
+      '<div class="visual-screenshot-tag"><svg class="icon" aria-hidden="true"><use href="#i-eye"/></svg>Captured by Playwright</div>'+
+    '</div>';
+  }
+
+  // Score ring
+  html+='<div class="card"><div class="visual-score-hero">'+
+    '<div class="visual-score-ring">'+
+      '<svg viewBox="0 0 100 100" style="transform:rotate(-90deg)">'+
+        '<circle cx="50" cy="50" r="'+r+'" fill="none" stroke="var(--color-muted)" stroke-width="8"/>'+
+        '<circle cx="50" cy="50" r="'+r+'" fill="none" stroke="'+color+'" stroke-width="8" stroke-linecap="round"'+
+          ' stroke-dasharray="'+c+'" stroke-dashoffset="'+offset+'" style="transition:stroke-dashoffset 1s ease"/>'+
+      '</svg>'+
+      '<div class="visual-score-center">'+
+        '<div class="visual-score-num" style="color:'+color+'">'+score+'</div>'+
+        '<div class="visual-score-lbl">visual</div>'+
+      '</div>'+
+    '</div>'+
+    '<div class="visual-verdict">'+
+      '<div class="visual-verdict-text" style="color:'+color+'">'+ic(STATUS[s].icon)+verdict+'</div>'+
+      '<div class="visual-verdict-sub">'+verdictSub+'</div>'+
+    '</div>'+
+  '</div></div>';
+
+  // Media type + originality chips
+  var mediaIcon=v.media_type==='image'?'image':v.media_type==='video_thumbnail'?'film':'circle';
+  var origIcon=v.originality==='original'?'circle-check':v.originality==='edited'?'triangle-alert':'rotate-ccw';
+  html+='<div class="visual-detail-row">'+
+    '<div class="visual-detail-chip '+(v.media_type||'none')+'">'+ic(mediaIcon)+' '+(v.media_type||'unknown')+'</div>'+
+    '<div class="visual-detail-chip '+(v.originality||'unknown')+'">'+ic(origIcon)+' '+(v.originality||'unknown')+'</div>'+
+  '</div>';
+
+  // Description
+  if(v.description){
+    html+='<div class="card"><div class="visual-desc">'+v.description+'</div></div>';
+  }
+
+  // Quality indicators
+  if(v.quality_indicators&&v.quality_indicators.length>0){
+    html+='<div class="card"><div class="visual-flags-title green">'+ic('circle-check')+'Quality indicators</div>';
+    v.quality_indicators.forEach(function(q){
+      html+='<div class="visual-qual-item">'+ic('circle-check')+'<span>'+q+'</span></div>';
+    });
+    html+='</div>';
+  }
+
+  // Manipulation signs
+  if(v.manipulation_signs&&v.manipulation_signs.length>0){
+    html+='<div class="card"><div class="visual-flags-title red">'+ic('shield-alert')+'Manipulation detected</div>';
+    v.manipulation_signs.forEach(function(m){
+      html+='<div class="visual-flag-item">'+ic('circle-alert')+'<span>'+m+'</span></div>';
+    });
+    html+='</div>';
+  }
+
+  // Visual red flags
+  if(v.visual_flags&&v.visual_flags.length>0){
+    html+='<div class="card"><div class="visual-flags-title red">'+ic('shield-alert')+'Visual red flags ('+v.visual_flags.length+')</div>';
+    v.visual_flags.forEach(function(f){
+      html+='<div class="visual-flag-item">'+ic('circle-alert')+'<span>'+f+'</span></div>';
+    });
+    html+='</div>';
+  }
+
+  // Visual green flags
+  if(v.visual_green_flags&&v.visual_green_flags.length>0){
+    html+='<div class="card"><div class="visual-flags-title green">'+ic('circle-check')+'Visual positive signals</div>';
+    v.visual_green_flags.forEach(function(f){
+      html+='<div class="visual-flag-item">'+ic('circle-check')+'<span>'+f+'</span></div>';
+    });
+    html+='</div>';
+  }
+
+  // Credits used
+  if(data.credits_used){
+    html+='<div style="text-align:center;margin-top:var(--space-md)">'+
+      '<span style="font-size:var(--fs-xs);color:var(--color-foreground-3)">'+ic('zap')+' Coasty: '+data.credits_used+' credits</span></div>';
+  }
+
+  document.getElementById('visualContent').innerHTML=html;
+}
+
 // ── LOADING STEPS ─────────────────────────────────────────
 function setStep(n,txt){
   var steps=document.querySelectorAll('.loading-step');
@@ -1254,7 +1648,7 @@ function setStep(n,txt){
     if(i===n-1)s.classList.add('active');
   });
   if(txt)document.getElementById('loadingText').textContent=txt;
-  document.getElementById('loadingBar').style.width=(n/6*100)+'%'
+  document.getElementById('loadingBar').style.width=(n/7*100)+'%'
 }
 
 // ── ANALYZE ──────────────────────────────────────────────
@@ -1270,9 +1664,26 @@ function analyzePost(){
   ld.classList.add('active');
   document.getElementById('loadingBar').style.width='0%';
   document.querySelectorAll('.loading-step').forEach(function(s){s.classList.remove('active','done')});
+  hideLoadingScreenshot();
+
+  // Reset visual column
+  document.getElementById('visualContent').innerHTML=
+    '<div class="visual-loading-placeholder">'+
+      '<svg class="icon" aria-hidden="true"><use href="#i-loader"/></svg>'+
+      '<p>Waiting for analysis…</p>'+
+    '</div>';
 
   // Step 1
   setStep(1,'Connecting to X...');
+
+  // Start Coasty visual analysis IN PARALLEL (it takes longer)
+  var coastyPromise=callCoastyVisual(url).then(function(data){
+    // Show screenshot in loading as soon as it arrives
+    if(data&&data.screenshot){
+      showLoadingScreenshot(data.screenshot);
+    }
+    return data;
+  });
 
   fetch(API_BASE+'/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:url})})
   .then(function(r){return r.json()}).then(function(d){
@@ -1315,19 +1726,37 @@ function analyzePost(){
         renderReplyQuality({score:null,detail:'Reply fetch failed: '+e.message});
       });
 
-    return Promise.all([llmPromise,repliesPromise]);
-  }).then(function(){
+    // Step 7 - Coasty visual (already running in parallel)
+    setStep(7,'Coasty vision scan...');
+
+    return Promise.all([llmPromise,repliesPromise,coastyPromise]);
+  }).then(function(results){
+    // Render Coasty visual result
+    var coastyData=results[2];
+    renderVisualAnalysis(coastyData);
+    hideLoadingScreenshot();
+
     document.getElementById('loadingBar').style.width='100%';
     setTimeout(function(){
       ld.classList.remove('active');rs.classList.add('active');btn.disabled=false;
-    },300);
+    },400);
   }).catch(function(e){
     ld.classList.remove('active');btn.disabled=false;alert('Error: '+e.message);
   })
 }
 
 function copyReport(){navigator.clipboard.writeText(document.getElementById('results').innerText).then(function(){alert('Copied!')})}
-function resetAnalyzer(){document.getElementById('postUrl').value='';document.getElementById('results').classList.remove('active');document.getElementById('loading').classList.remove('active')}
+function resetAnalyzer(){
+  document.getElementById('postUrl').value='';
+  document.getElementById('results').classList.remove('active');
+  document.getElementById('loading').classList.remove('active');
+  hideLoadingScreenshot();
+  document.getElementById('visualContent').innerHTML=
+    '<div class="visual-loading-placeholder">'+
+      '<svg class="icon" aria-hidden="true"><use href="#i-loader"/></svg>'+
+      '<p>Waiting for analysis…</p>'+
+    '</div>';
+}
 document.getElementById('postUrl').addEventListener('keydown',function(e){if(e.key==='Enter')analyzePost()});
 </script>
 </body>
