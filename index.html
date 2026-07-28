@@ -1696,6 +1696,7 @@ function setStep(n,txt){
 
 // ── FOLLOW GATE ──────────────────────────────────────────
 (function(){
+  if(new URLSearchParams(location.search).get('reset')==='1'){localStorage.removeItem('coasty_follow_verified');}
   if(localStorage.getItem('coasty_follow_verified')==='1'){
     document.getElementById('gateOverlay').classList.add('hidden');
   }
