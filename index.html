@@ -901,8 +901,14 @@ strong{font-weight:600}
    RESPONSIVE: 2-column → 1-column
    ══════════════════════════════════════════════════════════════════════ */
 @media(max-width:900px){
-  .results-grid{grid-template-columns:1fr;gap:var(--space-lg)}
+  .results-grid{grid-template-columns:1fr 1fr;gap:var(--space-sm)}
+  .results-col{min-width:0}
+  .col-label{font-size:var(--fs-xs);padding:var(--space-xs) var(--space-sm)}
+  .col-label .coasty-badge{display:none}
   .main{max-width:100%}
+}
+@media(max-width:480px){
+  .results-grid{grid-template-columns:1fr;gap:var(--space-md)}
 }
 </style>
 </head>
