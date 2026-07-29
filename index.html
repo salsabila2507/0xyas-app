@@ -929,6 +929,56 @@ strong{font-weight:600}
 .gate-status{margin-top:var(--space-sm);font-size:var(--fs-xs);min-height:20px}
 .gate-status.ok{color:var(--color-success)}
 .gate-status.err{color:var(--color-destructive)}
+
+/* Vision Playground */
+.vp{display:none;max-width:720px;margin:0 auto;padding:0 var(--space-lg) var(--space-2xl)}
+.vp.active{display:block}
+.vp-body{display:flex;flex-direction:column;gap:var(--space-lg)}
+.vp-upload{position:relative;border:2px dashed var(--color-border);border-radius:12px;padding:var(--space-2xl);text-align:center;cursor:pointer;transition:border-color .2s}
+.vp-upload.dragover{border-color:var(--color-primary);background:var(--tint-accent)}
+.vp-upload.has-image{border-style:solid;padding:var(--space-md)}
+.vp-upload input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.vp-upload-text{display:flex;flex-direction:column;align-items:center;gap:var(--space-sm);color:var(--color-foreground-3);font-size:var(--fs-sm)}
+.vp-upload-text strong{color:var(--color-foreground)}
+.vp-icon{width:48px;height:48px;stroke-width:1}
+.vp-preview{max-height:400px;border-radius:8px;display:none;margin:0 auto}
+.vp-upload.has-image .vp-preview{display:block}
+.vp-upload.has-image .vp-upload-text{display:none}
+.vp-upload.has-image input{display:none}
+.vp-remove{position:absolute;top:var(--space-sm);right:var(--space-sm);background:var(--color-surface);border:var(--panel);border-radius:50%;width:32px;height:32px;display:none;align-items:center;justify-content:center;cursor:pointer;z-index:2}
+.vp-upload.has-image .vp-remove{display:flex}
+.vp-file-info{font-size:var(--fs-xs);color:var(--color-foreground-3);text-align:center;margin-top:calc(-1 * var(--space-sm))}
+.vp-prompt-wrap{display:flex;flex-direction:column;gap:var(--space-md)}
+.vp-prompt{width:100%;background:var(--color-surface);border:var(--panel);padding:var(--space-md);font-family:inherit;font-size:var(--fs-base);resize:vertical;min-height:80px;color:var(--color-foreground)}
+.vp-prompt:focus{outline:3px solid var(--color-ring);outline-offset:2px}
+.vp-examples{display:flex;flex-wrap:wrap;gap:var(--space-sm)}
+.vp-examples button{background:var(--color-muted);border:1px solid var(--color-border);padding:var(--space-xs) var(--space-sm);font-size:var(--fs-xs);cursor:pointer;border-radius:var(--radius-pill);color:var(--color-foreground-2);transition:background var(--transition)}
+.vp-examples button:hover{background:var(--color-surface)}
+.vp-loading{display:none;flex-direction:column;align-items:center;gap:var(--space-md);padding:var(--space-2xl)}
+.vp-loading.active{display:flex}
+.vp-loading p{font-size:var(--fs-sm);color:var(--color-foreground-3)}
+.vp-result{display:none;flex-direction:column;gap:var(--space-lg)}
+.vp-result.active{display:flex}
+.vp-r-card{background:var(--color-surface);border:var(--panel);padding:var(--space-lg);display:flex;flex-direction:column;gap:var(--space-md)}
+.vp-r-image{max-height:300px;border-radius:4px;align-self:flex-start}
+.vp-r-prompt{font-size:var(--fs-xs);color:var(--color-foreground-3);padding:var(--space-sm);background:var(--color-muted);border-radius:4px}
+.vp-r-response{font-size:var(--fs-sm);line-height:1.7;white-space:pre-wrap;word-break:break-word;color:var(--color-foreground)}
+.vp-r-response strong{font-weight:600}
+.vp-r-response code{background:var(--color-muted);padding:1px 4px;font-family:monospace;font-size:.9em}
+.vp-r-response pre{background:var(--color-muted);border:1px solid var(--color-border);padding:var(--space-md);overflow-x:auto;font-family:monospace;font-size:.85em;border-radius:4px}
+.vp-r-meta{font-size:var(--fs-xs);color:var(--color-foreground-3);display:flex;gap:var(--space-md);justify-content:center}
+.vp-history{display:flex;flex-direction:column;gap:var(--space-sm)}
+.vp-h-item{display:flex;align-items:center;gap:var(--space-md);background:var(--color-surface);border:var(--panel);padding:var(--space-sm) var(--space-md);cursor:pointer;transition:background var(--transition)}
+.vp-h-item:hover{background:var(--color-muted)}
+.vp-h-thumb{width:40px;height:40px;object-fit:cover;border-radius:4px;flex-shrink:0}
+.vp-h-info{flex:1;min-width:0}
+.vp-h-prompt{font-size:var(--fs-sm);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--color-foreground)}
+.vp-h-time{font-size:var(--fs-xs);color:var(--color-foreground-3)}
+.vp-note{text-align:center;font-size:var(--fs-xs);color:var(--color-foreground-3);padding:var(--space-sm)}
+@media(max-width:600px){
+  .vp-examples{flex-direction:column}
+  .vp-examples button{text-align:left;border-radius:var(--radius-sm)}
+}
 </style>
 </head>
 <body>
@@ -978,7 +1028,9 @@ strong{font-weight:600}
 <header class="header">
   <div><a href="/" class="logo">0XYAS<span class="logo-sub">Tools</span></a></div>
   <nav class="nav" aria-label="Main">
-    <a href="https://0xyas.xyz">Home</a>
+    <a href="/">Home</a>
+    <a href="#playground">Vision Playground</a>
+    <a href="https://0xyas.xyz">0XYAS</a>
     <a href="https://x.com/calbuldelis69" target="_blank" rel="noopener noreferrer">
       X<svg class="icon" aria-hidden="true"><use href="#i-external"/></svg>
     </a>
@@ -1082,6 +1134,51 @@ strong{font-weight:600}
     </div>
   </div>
 </main>
+
+<!-- Vision Playground -->
+<section class="vp" id="vpSection">
+  <div class="hero">
+    <p class="hero-tag"><span class="dot"></span> Tool v1.0</p>
+    <h1>Computer <em>Vision Playground</em></h1>
+    <p>Upload any image, write a prompt, and ask Coasty's vision AI what it sees.</p>
+  </div>
+  <div class="vp-body">
+    <div class="vp-upload" id="vpDrop">
+      <input type="file" accept="image/png,image/jpeg,image/webp" id="vpFile">
+      <div class="vp-upload-text" id="vpUploadText">
+        <svg class="icon vp-icon" aria-hidden="true"><use href="#i-image"/></svg>
+        <strong>Drop image here or click to upload</strong>
+        <span>PNG, JPG, WEBP</span>
+      </div>
+      <img class="vp-preview" id="vpPreview">
+      <button class="vp-remove" id="vpRemove" onclick="vpRemove()">
+        <svg class="icon" aria-hidden="true"><use href="#i-x"/></svg>
+      </button>
+    </div>
+    <div class="vp-file-info" id="vpFileInfo"></div>
+    <div class="vp-prompt-wrap">
+      <textarea class="vp-prompt" id="vpPrompt" placeholder="Ask anything about this image..." rows="4"></textarea>
+      <div class="vp-examples" id="vpExamples">
+        <button onclick="vpSetPrompt(this.textContent)">Describe this image</button>
+        <button onclick="vpSetPrompt(this.textContent)">Analyze this UI design</button>
+        <button onclick="vpSetPrompt(this.textContent)">Extract all visible text</button>
+        <button onclick="vpSetPrompt(this.textContent)">Find buttons and important elements</button>
+        <button onclick="vpSetPrompt(this.textContent)">Detect suspicious parts</button>
+        <button onclick="vpSetPrompt(this.textContent)">Explain this dashboard</button>
+        <button onclick="vpSetPrompt(this.textContent)">Give improvement suggestions</button>
+        <button onclick="vpSetPrompt(this.textContent)">Check if this image looks AI generated</button>
+      </div>
+    </div>
+    <button class="btn-analyze" id="vpBtn" onclick="vpAnalyze()" disabled>
+      <svg class="icon" aria-hidden="true"><use href="#i-search"/></svg>Analyze Image
+    </button>
+    <div class="vp-loading" id="vpLoading">
+      <div class="loading-orb" aria-hidden="true"><div class="core"></div></div>
+      <p>Coasty is analyzing...</p>
+    </div>
+    <div class="vp-result" id="vpResult"></div>
+  </div>
+</section>
 
 <footer class="footer"><p>0XYAS Tools</p></footer>
 
@@ -1694,12 +1791,29 @@ function setStep(n,txt){
   document.getElementById('loadingBar').style.width=(n/7*100)+'%'
 }
 
+// ── ROUTING ──────────────────────────────────────────────
+function showRoute(){
+  var hash=location.hash||'#analyzer';
+  var main=document.getElementById('main');
+  var vp=document.getElementById('vpSection');
+  var gate=document.getElementById('gateOverlay');
+  var isVp=hash==='#playground';
+  main.style.display=isVp?'none':'';
+  vp.classList.toggle('active',isVp);
+  if(isVp){
+    gate.classList.add('hidden');
+  }else if(localStorage.getItem('coasty_follow_verified')==='1'||new URLSearchParams(location.search).get('reset')==='1'){
+    gate.classList.add('hidden');
+  }else{
+    gate.classList.remove('hidden');
+  }
+}
+window.addEventListener('hashchange',showRoute);
+
 // ── FOLLOW GATE ──────────────────────────────────────────
 (function(){
   if(new URLSearchParams(location.search).get('reset')==='1'){localStorage.removeItem('coasty_follow_verified');}
-  if(localStorage.getItem('coasty_follow_verified')==='1'){
-    document.getElementById('gateOverlay').classList.add('hidden');
-  }
+  showRoute();
 })();
 
 let gateFileData=null;
@@ -1846,6 +1960,165 @@ function resetAnalyzer(){
     '</div>';
 }
 document.getElementById('postUrl').addEventListener('keydown',function(e){if(e.key==='Enter')analyzePost()});
+
+// ── VISION PLAYGROUND ────────────────────────────────────
+var _vpHistory=[];
+
+// File input change
+document.getElementById('vpFile').addEventListener('change',function(e){
+  var file=e.target.files[0];
+  if(file)vpLoadFile(file);
+});
+
+// Drag and drop
+var drop=document.getElementById('vpDrop');
+drop.addEventListener('dragover',function(e){e.preventDefault();drop.classList.add('dragover')});
+drop.addEventListener('dragleave',function(){drop.classList.remove('dragover')});
+drop.addEventListener('drop',function(e){
+  e.preventDefault();drop.classList.remove('dragover');
+  var file=e.dataTransfer.files[0];
+  if(file&&file.type.startsWith('image/'))vpLoadFile(file);
+});
+
+// Clipboard paste
+document.addEventListener('paste',function(e){
+  if(!document.getElementById('vpSection').classList.contains('active'))return;
+  var file=e.clipboardData.files[0];
+  if(file&&file.type.startsWith('image/'))vpLoadFile(file);
+});
+
+function vpLoadFile(file){
+  var valid=['image/png','image/jpeg','image/webp'];
+  if(!valid.includes(file.type)){alert('Only PNG, JPG, WEBP allowed');return}
+  var maxSize=10*1024*1024;
+  if(file.size>maxSize){alert('File too large (max 10MB)');return}
+  var reader=new FileReader();
+  reader.onload=function(e){
+    window._vpImageData=e.target.result;
+    document.getElementById('vpPreview').src=window._vpImageData;
+    drop.classList.add('has-image');
+    document.getElementById('vpUploadText').style.display='none';
+    document.getElementById('vpFileInfo').textContent=file.name+' ('+Math.round(file.size/1024)+'KB)';
+    vpCheckBtn();
+  };
+  reader.readAsDataURL(file);
+}
+
+function vpRemove(){
+  window._vpImageData=null;
+  drop.classList.remove('has-image','dragover');
+  document.getElementById('vpUploadText').style.display='';
+  document.getElementById('vpPreview').src='';
+  document.getElementById('vpFileInfo').textContent='';
+  document.getElementById('vpFile').value='';
+  vpCheckBtn();
+}
+
+function vpSetPrompt(txt){
+  document.getElementById('vpPrompt').value=txt;
+  vpCheckBtn();
+}
+
+function vpCheckBtn(){
+  var btn=document.getElementById('vpBtn');
+  btn.disabled=!window._vpImageData||!document.getElementById('vpPrompt').value.trim();
+}
+
+document.getElementById('vpPrompt').addEventListener('input',vpCheckBtn);
+
+function vpAnalyze(){
+  if(!window._vpImageData)return;
+  var prompt=document.getElementById('vpPrompt').value.trim();
+  if(!prompt)return;
+  var btn=document.getElementById('vpBtn');
+  var loading=document.getElementById('vpLoading');
+  var result=document.getElementById('vpResult');
+  btn.disabled=true;loading.classList.add('active');result.classList.remove('active');
+  var start=Date.now();
+  fetch(API_BASE+'/api/vision-playground',{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({image:window._vpImageData,prompt:prompt})
+  }).then(function(r){return r.json()}).then(function(d){
+    loading.classList.remove('active');btn.disabled=false;vpCheckBtn();
+    if(d.error){alert(d.error);return}
+    vpRenderResult(d,prompt,start);
+    _vpHistory.unshift({image:window._vpImageData,prompt:prompt,response:d.response,time:Date.now()-start,ts:new Date().toLocaleTimeString()});
+    vpRenderHistory();
+  }).catch(function(e){
+    loading.classList.remove('active');btn.disabled=false;vpCheckBtn();
+    alert('Error: '+e.message);
+  });
+}
+
+function vpRenderResult(d,prompt,start){
+  var result=document.getElementById('vpResult');
+  var ts=Date.now()-start;
+  result.className='vp-result active';
+  var resp=d.response||'No response.';
+  resp=resp.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  resp=resp.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
+  resp=resp.replace(/`(.+?)`/g,'<code>$1</code>');
+  resp=resp.replace(/\n/g,'<br>');
+  result.innerHTML=
+    '<div class="vp-r-card">'+
+      '<img class="vp-r-image" src="'+window._vpImageData+'" alt="Uploaded">'+
+      '<div class="vp-r-prompt">'+prompt.replace(/</g,'&lt;')+'</div>'+
+      '<div class="vp-r-response">'+resp+'</div>'+
+      '<div class="vp-r-meta">'+
+        '<span>'+ts+'ms</span>'+
+        '<span>Coasty: '+d.credits_used+' credits</span>'+
+      '</div>'+
+    '</div>'+
+    '<div class="vp-note">Results are stored in memory for this session.</div>';
+}
+
+function vpRenderHistory(){
+  var result=document.getElementById('vpResult');
+  if(_vpHistory.length<1)return;
+  var html='<div class="vp-history">';
+  _vpHistory.forEach(function(h,i){
+    var promptShort=h.prompt.length>40?h.prompt.slice(0,40)+'...':h.prompt;
+    html+='<div class="vp-h-item" onclick="vpRestore('+i+')">'+
+      '<img class="vp-h-thumb" src="'+h.image+'" alt="">'+
+      '<div class="vp-h-info"><div class="vp-h-prompt">'+promptShort.replace(/</g,'&lt;')+'</div><div class="vp-h-time">'+h.ts+' · '+(h.time<1000?h.time+'ms':(h.time/1000).toFixed(1)+'s')+'</div></div>'+
+    '</div>';
+  });
+  html+='</div>';
+  // Append history after current result
+  var existing=result.querySelector('.vp-history');
+  if(existing)existing.outerHTML=html;
+  else result.insertAdjacentHTML('beforeend',html);
+}
+
+function vpRestore(i){
+  var h=_vpHistory[i];
+  if(!h)return;
+  window._vpImageData=h.image;
+  document.getElementById('vpPreview').src=h.image;
+  drop.classList.add('has-image');
+  document.getElementById('vpUploadText').style.display='none';
+  document.getElementById('vpFile').value='';
+  document.getElementById('vpPrompt').value=h.prompt;
+  // Re-render result
+  var result=document.getElementById('vpResult');
+  result.className='vp-result active';
+  var resp=h.response.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  resp=resp.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
+  resp=resp.replace(/`(.+?)`/g,'<code>$1</code>');
+  resp=resp.replace(/\n/g,'<br>');
+  result.innerHTML=
+    '<div class="vp-r-card">'+
+      '<img class="vp-r-image" src="'+h.image+'" alt="Uploaded">'+
+      '<div class="vp-r-prompt">'+h.prompt.replace(/</g,'&lt;')+'</div>'+
+      '<div class="vp-r-response">'+resp+'</div>'+
+      '<div class="vp-r-meta">'+
+        '<span>'+h.time+'ms</span>'+
+      '</div>'+
+    '</div>'+
+    '<div class="vp-note">Results are stored in memory for this session.</div>';
+  vpRenderHistory();
+  vpCheckBtn();
+}
 </script>
 </body>
 </html>
