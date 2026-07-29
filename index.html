@@ -1059,7 +1059,7 @@ strong{font-weight:600}
       <input type="file" accept="image/*" id="gateFile" onchange="handleGateFile(this)">
       <div class="gate-upload-text">
         <strong>Drop screenshot here</strong>
-        PNG or JPG — show the "Following" button on @coastyai's profile
+        PNG or JPG, show the "Following" button on @coastyai's profile
       </div>
     </div>
     <img class="gate-preview" id="gatePreview">
@@ -1153,7 +1153,7 @@ strong{font-weight:600}
   <section class="hero">
     <p class="hero-tag"><span class="dot"></span> Tool v1.0</p>
     <h1>Web <em>Analyzer</em></h1>
-    <p>Enter any website URL. Coasty captures a screenshot, then AI analyzes the design, UX, and conversion — or clone the visual design into React code.</p>
+    <p>Enter any website URL. Coasty captures a screenshot, then AI analyzes the design, UX, and conversion. Or clone the visual design into React code.</p>
   </section>
 
   <div class="wa-tabs" role="tablist">
@@ -1839,7 +1839,7 @@ async function submitGate(){
       status.textContent='Verified! Welcome in.';status.className='gate-status ok';
       setTimeout(function(){document.getElementById('gateOverlay').classList.add('hidden');},800);
     }else{
-      status.textContent='Not following yet — follow @coastyai then try again.';status.className='gate-status err';
+      status.textContent='Not following yet, follow @coastyai then try again.';status.className='gate-status err';
       btn.disabled=false;btn.textContent='Verify & Enter';
     }
   }catch(e){
