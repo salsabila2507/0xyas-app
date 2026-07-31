@@ -1528,6 +1528,7 @@ function renderXora(xora){
 
   // Checks grid, state is icon + word + colour, never colour alone
   var c=xora.checks;
+  var ctas=c.cta||[];
   var ICON={pass:'circle-check',warn:'triangle-alert',fail:'shield-alert',none:'minus'};
   function check(state,label,value){
     return '<div class="xora-check">'+
@@ -1537,34 +1538,37 @@ function renderXora(xora){
     '</div>';
   }
   var apyState=c.claimedApy?(c.claimedApy<=22?'pass':'fail'):'none';
-  var ctaState=c.ctas.length<=1?'pass':c.ctas.length<=2?'warn':'fail';
+  var ctaState=ctas.length<=1?'pass':ctas.length<=2?'warn':'fail';
   var checksHtml=
     check(c.mentionsOfficial?'pass':'fail','Official @xora_finance',c.mentionsOfficial?'Yes':'No')+
-    check(c.hasOfficialLink?'pass':'warn','Official xora.finance link',c.hasOfficialLink?'Yes':'No')+
-    check(c.hasFakeLink?'fail':'pass','Fake domain check',c.hasFakeLink?'Fake found':'Clean')+
+    check((c.officialLinks||0)>0?'pass':'warn','Official xora.finance link',(c.officialLinks||0)>0?'Yes':'No')+
+    check((c.fakeLinks||0)>0?'fail':'pass','Fake domain check',(c.fakeLinks||0)>0?'Fake found':'Clean')+
     check(c.isImpersonator?'fail':'pass','Impersonation check',c.isImpersonator?'Impersonator':'OK')+
     check(apyState,'APY claim accuracy',c.claimedApy?c.claimedApy+'%':'Not stated')+
-    check(ctaState,'CTA intensity',c.ctas.length+' CTA'+(c.ctas.length!==1?'s':''));
+    check(ctaState,'CTA intensity',ctas.length+' CTA'+(ctas.length!==1?'s':''));
 
   // Links
   var linksHtml='';
-  if(c.links.length>0){
+  var linkRows=[];
+  if((c.officialLinks||0)>0) linkRows.push({url:'Official xora.finance domain',fake:false,official:true});
+  if((c.fakeLinks||0)>0) linkRows.push({url:'Suspicious XORA-lookalike domain',fake:true,official:false});
+  if((c.referralLinks||0)>0) linkRows.push({url:'Referral/tracking link',fake:false,official:false});
+  if((c.shortenedLinks||0)>0) linkRows.push({url:'Shortened link, destination unverified',fake:false,official:false});
+  if(linkRows.length>0){
     linksHtml='<div class="xora-links">';
-    c.links.forEach(function(l){
-      var isFake=/xorafinance\.com|xora-?finance\.(com|net|org|xyz|io)|xora\.(?!finance)/i.test(l);
-      var isOfficial=/xora\.finance/i.test(l);
-      var cls=isFake?'fake':isOfficial?'official':'';
-      var icon=isFake?'shield-alert':isOfficial?'circle-check':'link';
-      linksHtml+='<div class="xora-link '+cls+'">'+ic(icon)+'<span>'+l+'</span></div>';
+    linkRows.forEach(function(l){
+      var cls=l.fake?'fake':l.official?'official':'';
+      var icon=l.fake?'shield-alert':l.official?'circle-check':'link';
+      linksHtml+='<div class="xora-link '+cls+'">'+ic(icon)+'<span>'+l.url+'</span></div>';
     });
     linksHtml+='</div>';
   }
 
   // CTAs
   var ctasHtml='';
-  if(c.ctas.length>0){
+  if(ctas.length>0){
     ctasHtml='<div class="xora-ctas">';
-    c.ctas.forEach(function(cta){
+    ctas.forEach(function(cta){
       var dangerCtas=['Link redirect CTA','DM solicitation','Urgency CTA','Claim CTA'];
       var cls=dangerCtas.includes(cta)?'xora-cta-danger':cta.includes('Sign-up')||cta.includes('Deposit')?'xora-cta-warn':'xora-cta-safe';
       ctasHtml+='<div class="xora-cta-tag '+cls+'">'+cta+'</div>';
@@ -1581,7 +1585,7 @@ function renderXora(xora){
     '<div class="xora-checks">'+checksHtml+'</div>'+
     linksHtml+
     ctasHtml+
-    '<div class="xora-summary">'+xora.summary+'</div>'+
+    '<div class="xora-summary">'+(xora.summary||xora.trustLabel||'No summary available.')+'</div>'+
   '</div>';
   document.getElementById('xoraSection').innerHTML=html
 }
