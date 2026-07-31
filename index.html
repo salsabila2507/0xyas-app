@@ -1568,7 +1568,8 @@ function renderXora(xora){
   var ctasHtml='';
   if(ctas.length>0){
     ctasHtml='<div class="xora-ctas">';
-    ctas.forEach(function(cta){
+    ctas.forEach(function(ct){
+      var cta=typeof ct==='string'?ct:(ct&&ct.label)||'CTA';
       var dangerCtas=['Link redirect CTA','DM solicitation','Urgency CTA','Claim CTA'];
       var cls=dangerCtas.includes(cta)?'xora-cta-danger':cta.includes('Sign-up')||cta.includes('Deposit')?'xora-cta-warn':'xora-cta-safe';
       ctasHtml+='<div class="xora-cta-tag '+cls+'">'+cta+'</div>';
